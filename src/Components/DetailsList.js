@@ -31,7 +31,7 @@ const DetailsList = () => {
         margin: "auto",
         mt: 4,
         borderRadius: "12px",
-        overflow: "hidden",
+        // overflow: "hidden",
         boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
         backdropFilter: "blur(8px)", // Glass effect
         backgroundColor: "rgba(255, 255, 255, 0.1)",

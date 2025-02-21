@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button 
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const DetailsList = () => {
   const backendUrl = "https://ppc-backend.onrender.com/api/";
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +25,19 @@ const DetailsList = () => {
     fetchData();
   }, []);
 
+  const handleEdit = (id) => {
+    navigate(`/edit-details/${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${backendUrl}/delete-sample/${id}`);
+      setData((prevData) => prevData.filter((user) => user._id !== id));
+    } catch (error) {
+      console.error("Error deleting record:", error);
+    }
+  };
+
   return (
     <TableContainer
       component={Paper}
@@ -31,9 +46,8 @@ const DetailsList = () => {
         margin: "auto",
         mt: 4,
         borderRadius: "12px",
-        // overflow: "hidden",
         boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
-        backdropFilter: "blur(8px)", // Glass effect
+        backdropFilter: "blur(8px)",
         backgroundColor: "rgba(255, 255, 255, 0.1)",
       }}
     >
@@ -65,14 +79,13 @@ const DetailsList = () => {
         </Typography>
       ) : (
         <Table>
-          {/* Table Head with Gradient */}
           <TableHead
             sx={{
-             background: "linear-gradient(90deg, #1e3c72, #2a5298)", 
+              background: "linear-gradient(90deg, #1e3c72, #2a5298)",
             }}
           >
             <TableRow>
-              {["#", "Name", "Email", "Phone", "City"].map((head, index) => (
+              {["#", "Name", "Email", "Phone", "City", "Actions"].map((head, index) => (
                 <TableCell
                   key={index}
                   sx={{
@@ -89,7 +102,6 @@ const DetailsList = () => {
             </TableRow>
           </TableHead>
 
-          {/* Table Body with Hover Effect */}
           <TableBody>
             {data.map((user, index) => (
               <TableRow
@@ -110,6 +122,24 @@ const DetailsList = () => {
                 <TableCell sx={{ textAlign: "center" }}>{user.email}</TableCell>
                 <TableCell sx={{ textAlign: "center" }}>{user.phone}</TableCell>
                 <TableCell sx={{ textAlign: "center" }}>{user.city}</TableCell>
+                <TableCell sx={{ textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mx: 1 }}
+                    onClick={() => handleEdit(user._id)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ mx: 1 }}
+                    onClick={() => handleDelete(user._id)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

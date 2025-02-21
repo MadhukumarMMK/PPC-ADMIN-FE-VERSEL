@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import ADDDETAILS from "./Components/AddDetails";
 import DETAILSLIST from "./Components/DetailsList";
+import EDITDETAILS from "./Components/EditDetails";
 import Navbar from "./Components/Navbar";
 import SignIn from "./Components/SignIn";
 import PrivateRoute from "./Components/PrivateRoute";
@@ -30,6 +31,14 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+        path="/edit-details/:id"
+        element={
+          <PrivateRoute>
+            <EDITDETAILS />
+          </PrivateRoute>
+        }
+      />
       </Routes>
     </Router>
   );

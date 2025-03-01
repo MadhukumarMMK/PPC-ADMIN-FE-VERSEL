@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
+  Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle 
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const DetailsList = () => {
   const backendUrl = "https://ppc-backend.onrender.com/api/";
   const [data, setData] = useState([]);
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,7 +18,6 @@ const DetailsList = () => {
       try {
         const response = await axios.get(backendUrl + "get-sample");
         if (response.status === 200) {
-          console.log(response.data);
           setData(response.data);
         }
       } catch (error) {
@@ -29,13 +31,24 @@ const DetailsList = () => {
     navigate(`/edit-details/${id}`);
   };
 
-  const handleDelete = async (id) => {
+  const openConfirmDialog = (id) => {
+    setDeleteId(id);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`${backendUrl}/delete-sample/${id}`);
-      setData((prevData) => prevData.filter((user) => user._id !== id));
+      await axios.delete(`${backendUrl}/delete-sample/${deleteId}`);
+      setData((prevData) => prevData.filter((user) => user._id !== deleteId));
     } catch (error) {
       console.error("Error deleting record:", error);
     }
+    handleClose();
   };
 
   return (
@@ -135,7 +148,7 @@ const DetailsList = () => {
                     variant="contained"
                     color="secondary"
                     sx={{ mx: 1 }}
-                    onClick={() => handleDelete(user._id)}
+                    onClick={() => openConfirmDialog(user._id)}
                   >
                     Delete
                   </Button>
@@ -145,6 +158,24 @@ const DetailsList = () => {
           </TableBody>
         </Table>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this record? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainer>
   );
 };
